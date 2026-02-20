@@ -1,0 +1,59 @@
+# flowmpl Matplotlib style — aligned with the design system in design.py
+# Applied via flowmpl.apply_style() at the start of a notebook or script.
+
+# ── Colors ────────────────────────────────────────────────────────────
+xtick.color: 323034
+ytick.color: 323034
+text.color: 323034
+lines.markeredgecolor: black
+patch.facecolor: 4477AA
+patch.force_edgecolor: True
+patch.linewidth: 0.8
+scatter.edgecolors: white
+grid.color: e0e0e0
+axes.labelcolor: 323034
+axes.edgecolor: 323034
+
+# ── Color cycle — Paul Tol qualitative (colorblind-safe) ─────────────
+axes.prop_cycle: cycler('color', ['4477AA', 'EE6677', '228833', 'CCBB44', '66CCEE', 'AA3377', 'BBBBBB', 'EE8866'])
+
+# ── Font ──────────────────────────────────────────────────────────────
+font.size: 12
+font.family: STIXGeneral
+mathtext.fontset: stix
+text.usetex: False
+
+# ── Axes ──────────────────────────────────────────────────────────────
+axes.titlesize: 19
+axes.titlelocation: left
+axes.labelsize: 15
+axes.labelpad: 3
+axes.linewidth: 0.6
+axes.spines.right: False
+axes.spines.top: False
+axes.grid: False
+axes.formatter.use_mathtext: True
+axes.formatter.limits: -4, 4
+axes.autolimit_mode: round_numbers
+
+# ── Lines ─────────────────────────────────────────────────────────────
+lines.linewidth: 3
+lines.markersize: 9
+
+# ── Ticks ─────────────────────────────────────────────────────────────
+xtick.labelsize: 14
+ytick.labelsize: 14
+
+# ── Legend ─────────────────────────────────────────────────────────────
+legend.frameon: False
+legend.fontsize: 13
+legend.title_fontsize: 14
+legend.borderpad: 0.2
+legend.columnspacing: 1.5
+legend.labelspacing: 0.4
+
+# ── Figure ────────────────────────────────────────────────────────────
+figure.titlesize: 21
+figure.dpi: 150
+figure.figsize: 10, 5
+savefig.dpi: 150

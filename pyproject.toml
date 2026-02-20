@@ -7,7 +7,7 @@ packages = ["src/flowmpl"]
 
 [project]
 name = "flowmpl"
-version = "0.1.0"
+version = "0.2.0"
 description = "Matplotlib design system and flow diagram renderer for analytical publications"
 requires-python = ">=3.11"
 license = {text = "MIT"}
@@ -22,7 +22,8 @@ dependencies = [
 charts = ["pandas>=2.0"]
 maps = ["geopandas>=1.0", "requests>=2.31"]
 all = ["flowmpl[charts,maps]"]
-dev = ["ruff>=0.3", "mypy>=1.8"]
+dev = ["ruff>=0.3", "mypy>=1.8", "marimo>=0.10", "flowmpl[charts,maps,examples]"]
+examples = ["marimo>=0.10", "dlt[duckdb]>=1.0"]
 
 [tool.ruff]
 target-version = "py311"
@@ -30,6 +31,11 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "N", "W", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+# Marimo notebooks use __ for anonymous cells, UPPER_CASE for reactive deps,
+# and long lines inside markdown strings — all intentional conventions.
+"notebooks/*.py" = ["N803", "N806", "N807", "E501"]
 
 [tool.mypy]
 python_version = "3.11"

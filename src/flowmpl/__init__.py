@@ -21,10 +21,12 @@ from flowmpl.design import (
     COLORS,
     CONTEXT,
     FIGSIZE,
+    FLOW_EDGE_FONT_SIZE,
     FLOW_FONT_SIZE,
     FONTS,
     LEGEND_DEFAULTS,
     SCATTER_DEFAULTS,
+    apply_style,
 )
 from flowmpl.flow import flow_diagram
 from flowmpl.helpers import (
@@ -46,10 +48,13 @@ from flowmpl.palettes import (
 )
 
 __all__ = [
+    # Style
+    "apply_style",
     # Design tokens
     "COLORS",
     "CONTEXT",
     "FIGSIZE",
+    "FLOW_EDGE_FONT_SIZE",
     "FLOW_FONT_SIZE",
     "FONTS",
     "BAR_DEFAULTS",

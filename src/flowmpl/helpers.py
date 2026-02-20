@@ -89,11 +89,17 @@ def chart_title(
     """
     fig.suptitle(
         title,
-        fontsize=fontsize or FONTS["caption"],
+        fontsize=fontsize or FONTS["suptitle"],
         color=color or COLORS["text_light"],
         fontstyle="italic",
         x=0.02, ha="left",
     )
+    # Re-run layout so tight_layout accounts for the suptitle; without this
+    # the suptitle overlaps the top of the axes area.
+    try:
+        fig.tight_layout(rect=[0, 0, 1, 0.94])
+    except Exception:
+        pass  # no-op if figure uses constrained_layout
 
 
 def annotate_point(
@@ -257,13 +263,14 @@ def legend_below(
     if old:
         old.remove()
     _anchor = kwargs.pop("bbox_to_anchor", (0.5, -0.15))
+    _fontsize = kwargs.pop("fontsize", FONTS["legend"])
     _merged = {**LEGEND_DEFAULTS, **kwargs}
     ax.legend(
         handles, labels,
         loc="upper center",
         bbox_to_anchor=_anchor,
         ncol=ncol,
-        fontsize=FONTS["legend"],
+        fontsize=_fontsize,
         frameon=False,
         **_merged,
     )

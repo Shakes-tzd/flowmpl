@@ -14,6 +14,7 @@ from typing import TYPE_CHECKING
 import matplotlib.pyplot as plt
 
 from flowmpl.design import COLORS, FIGSIZE, FONTS, SCATTER_DEFAULTS
+from flowmpl.helpers import chart_title
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -50,7 +51,12 @@ def _get_states_gdf():
         resp = requests.get(_SHAPEFILE_URL, timeout=60)
         resp.raise_for_status()
         _SHAPEFILE_DIR.mkdir(parents=True, exist_ok=True)
+        _shapefile_dir_resolved = _SHAPEFILE_DIR.resolve()
         with zipfile.ZipFile(io.BytesIO(resp.content)) as zf:
+            for member in zf.namelist():
+                member_path = (_SHAPEFILE_DIR / member).resolve()
+                if not str(member_path).startswith(str(_shapefile_dir_resolved)):
+                    raise ValueError(f"Unsafe ZIP path rejected: {member}")
             zf.extractall(_SHAPEFILE_DIR)
 
     gdf = gpd.read_file(shp_file)
@@ -127,4 +133,5 @@ def us_scatter_map(
         )
 
     plt.tight_layout()
+    chart_title(fig, title)
     return fig

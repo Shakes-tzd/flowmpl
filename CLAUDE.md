@@ -1,6 +1,8 @@
 # CLAUDE.md — flowmpl
 
 **Owner:** Thandolwethu Zwelakhe Dlamini (Shakes)
+**GitHub:** https://github.com/Shakes-tzd/flowmpl (public, `master` branch)
+**PyPI:** `pip install flowmpl` / `uv pip install flowmpl` — v0.1.0 published
 
 ---
 
@@ -125,31 +127,31 @@ Use them when multiple edges would otherwise exit the same face and overlap.
 
 ## Systems Integration
 
-Systems depends on flowmpl via a uv path source:
+Systems depends on flowmpl from PyPI:
 
 ```toml
 # Systems/pyproject.toml
-dependencies = ["flowmpl[all]"]
-
-[tool.uv.sources]
-flowmpl = { path = "../flowmpl", editable = true }
+dependencies = ["flowmpl[all]>=0.1.0"]
 ```
 
 `src/plotting.py` in Systems is a compatibility shim — `from flowmpl import ...` only.
 Notebooks import from `src.plotting`; the shim forwards everything.
 
-**After changing flowmpl:** run `bash scripts/test_notebooks.sh` in Systems to confirm
-no regressions. The test suite executes every cell of every active notebook headlessly.
+**After changing flowmpl:** publish a new version to PyPI, bump the version pin in
+Systems `pyproject.toml`, run `uv sync`, then `bash scripts/test_notebooks.sh` to confirm
+no regressions.
 
 ---
 
-## Publishing to PyPI (when ready)
+## Releasing a New Version
 
-1. Bump `version` in `pyproject.toml`
-2. `uv build`
-3. `uv publish`
-4. In Systems, change `[tool.uv.sources]` entry to `"flowmpl[all]>=<new_version>"` and
-   remove the path source
+1. Make changes, run `uv run ruff check src/ --fix`
+2. Bump `version` in `pyproject.toml` (semantic versioning)
+3. `uv build`
+4. `uv publish`
+5. Push to `master`: `git push origin master`
+6. In Systems `pyproject.toml`, update the version pin: `"flowmpl[all]>=<new_version>"`
+7. `uv sync` in Systems; `bash scripts/test_notebooks.sh` — all must pass
 
 ---
 

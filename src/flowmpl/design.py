@@ -7,6 +7,27 @@ dimensions as magic numbers.
 
 from __future__ import annotations
 
+from importlib.resources import as_file, files
+
+
+def apply_style() -> None:
+    """Apply the flowmpl Matplotlib style to the current session.
+
+    Sets rcParams for consistent chart appearance: Paul Tol colorblind-safe
+    color cycle, STIXGeneral font, top/right spine removal, tick sizes, and
+    legend styling. Call once at the start of a notebook or script before
+    creating any figures.
+
+    Example::
+
+        import flowmpl
+        flowmpl.apply_style()
+    """
+    import matplotlib.pyplot as plt
+
+    with as_file(files("flowmpl").joinpath("shakes.mplstyle")) as _p:
+        plt.style.use(_p)
+
 # ───────────────────────────────────────────────────────────────────────────
 # Semantic role colors
 # ───────────────────────────────────────────────────────────────────────────
@@ -46,9 +67,10 @@ FONTS: dict[str, int] = {
     "small":       11,   # small annotations, dense charts
 }
 
-# Standard font size for flow_diagram() — consistent text appearance
+# Standard font sizes for flow_diagram() — consistent text appearance
 # across all notebooks when displayed at width=850 px.
 FLOW_FONT_SIZE: int = 18
+FLOW_EDGE_FONT_SIZE: int = 16
 
 
 # ───────────────────────────────────────────────────────────────────────────

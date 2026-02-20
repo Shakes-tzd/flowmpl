@@ -18,9 +18,10 @@ from __future__ import annotations
 
 import matplotlib.patches as mpatches
 import matplotlib.pyplot as plt
+import numpy as np
 
 from flowmpl.design import COLORS, CONTEXT
-from flowmpl.helpers import legend_below
+from flowmpl.helpers import chart_title, legend_below
 
 
 def flow_diagram(
@@ -38,6 +39,7 @@ def flow_diagram(
     legend_handles: list | None = None,
     legend_ncol: int | None = None,
     max_autoscale: float | None = 1.5,
+    title: str | None = None,
 ) -> plt.Figure:
     """Draw a stocks-and-flows style flow diagram with auto-sized rounded nodes.
 
@@ -103,10 +105,10 @@ def flow_diagram(
     >>> edges = [{"src": "a", "dst": "b", "label": "flows to"}]
     >>> fig = flow_diagram(nodes, edges)
     """
-    from flowmpl.design import FONTS  # local to avoid circular at module level
+    from flowmpl.design import FLOW_EDGE_FONT_SIZE, FONTS  # local to avoid circular at module level
 
     _fs = font_size if font_size is not None else FONTS["annotation"] - 2
-    _efs = edge_font_size if edge_font_size is not None else FONTS["annotation"] - 3
+    _efs = edge_font_size if edge_font_size is not None else FLOW_EDGE_FONT_SIZE
 
     fig, ax = plt.subplots(figsize=figsize)
     fig.subplots_adjust(left=0.01, right=0.99, top=0.92, bottom=0.12)
@@ -278,21 +280,7 @@ def flow_diagram(
         _forced_entry = edge.get("entry")
         _face_angle = {"right": 0, "left": 180, "top": 90, "bottom": -90}
 
-        if _forced_exit is not None and _forced_entry is not None:
-            _exit_angle = _face_angle[_forced_exit]
-            _entry_angle = _face_angle[_forced_entry]
-            _exit_face = _forced_exit
-            _entry_face = _forced_entry
-            if _forced_entry == "left":
-                x2, y2 = dx - _hw[dst] - _tip, dy
-            elif _forced_entry == "right":
-                x2, y2 = dx + _hw[dst] + _tip, dy
-            elif _forced_entry == "top":
-                x2, y2 = dx, dy + _hh[dst] + _tip
-            else:  # bottom
-                x2, y2 = dx, dy - _hh[dst] - _tip
-
-        elif abs(vy) < abs(vx) * 0.25:
+        if abs(vy) < abs(vx) * 0.25:
             # Near-horizontal: straight, side faces
             if vx >= 0:
                 x2, y2 = dx - _hw[dst] - _tip, dy
@@ -347,6 +335,22 @@ def flow_diagram(
                     x2, y2 = dx, dy + _hh[dst] + _tip
                     _exit_angle = _entry_angle = -90
                     _entry_face, _exit_face = "top", "bottom"
+
+        # Apply single-sided forced face overrides (post-heuristic)
+        if _forced_exit is not None:
+            _exit_face = _forced_exit
+            _exit_angle = _face_angle[_forced_exit]
+        if _forced_entry is not None:
+            _entry_face = _forced_entry
+            _entry_angle = _face_angle[_forced_entry]
+            if _forced_entry == "left":
+                x2, y2 = dx - _hw[dst] - _tip, dy
+            elif _forced_entry == "right":
+                x2, y2 = dx + _hw[dst] + _tip, dy
+            elif _forced_entry == "top":
+                x2, y2 = dx, dy + _hh[dst] + _tip
+            else:  # bottom
+                x2, y2 = dx, dy - _hh[dst] - _tip
 
         _routes.append({
             "edge": edge, "src": src, "dst": dst,
@@ -463,10 +467,21 @@ def flow_diagram(
                     _f1x, _f1y = x1 - _hw[src], y1
                 else:
                     _f1x, _f1y = x1, y1
-                mx, my = (_f1x + x2) / 2, (_f1y + y2) / 2
+                if curve != 0:
+                    # arc3 label at visual arc midpoint: B(0.5) = 0.25*P0 + 0.5*P1 + 0.25*P2
+                    _p0 = np.array([_f1x, _f1y])
+                    _p2 = np.array([x2, y2])
+                    _chord = _p2 - _p0
+                    _chord_len = np.linalg.norm(_chord)
+                    _perp = np.array([-_chord[1], _chord[0]]) / (_chord_len + 1e-9)
+                    _p1 = (_p0 + _p2) / 2 + curve * _chord_len * _perp
+                    _mid = 0.25 * _p0 + 0.5 * _p1 + 0.25 * _p2
+                    mx, my = float(_mid[0]), float(_mid[1])
+                else:
+                    mx, my = (_f1x + x2) / 2, (_f1y + y2) / 2
             ax.text(
                 mx, my, lbl, ha="center", va="center",
-                fontsize=_efs, color=color,
+                fontsize=_efs, fontweight="bold", color=color,
                 bbox=dict(
                     boxstyle="round,pad=0.15",
                     fc=COLORS["background"], ec="none", alpha=0.95,
@@ -476,6 +491,9 @@ def flow_diagram(
 
     if legend_handles:
         ncol = legend_ncol if legend_ncol is not None else len(legend_handles)
-        legend_below(ax, handles=legend_handles, ncol=ncol)
+        legend_below(ax, handles=legend_handles, ncol=ncol, fontsize=_fs)
+
+    if title is not None:
+        chart_title(fig, title)
 
     return fig

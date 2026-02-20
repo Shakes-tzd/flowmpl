@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 from flowmpl.design import COLORS, FIGSIZE, FONTS
-from flowmpl.helpers import legend_below
+from flowmpl.helpers import chart_title, legend_below
 from flowmpl.palettes import CATEGORICAL
 
 if TYPE_CHECKING:
@@ -84,6 +84,7 @@ def annotated_series(
     ax.grid(True, linestyle=":", alpha=0.6)
     plt.tight_layout()
     legend_below(ax)
+    chart_title(fig, title)
     return fig
 
 
@@ -122,8 +123,7 @@ def multi_panel(
     if figsize is None:
         figsize = (6 * ncols, 4 * nrows)
 
-    fig, axes = plt.subplots(nrows, ncols, figsize=figsize)
-    axes = np.atleast_2d(axes)
+    fig, axes = plt.subplots(nrows, ncols, figsize=figsize, squeeze=False)
 
     for idx, panel in enumerate(panels):
         row, col = divmod(idx, ncols)
@@ -143,6 +143,7 @@ def multi_panel(
         row, col = divmod(idx, ncols)
         axes[row, col].set_visible(False)
     plt.tight_layout()
+    chart_title(fig, suptitle)
     return fig
 
 
@@ -183,6 +184,7 @@ def stacked_bar(
     bottom = np.zeros(len(x))
 
     for col, style in stack_cols.items():
+        style = style.copy()
         color = style.pop("color", None)
         label = style.pop("label", col)
         values = df[col].values.astype(float)
@@ -195,6 +197,7 @@ def stacked_bar(
     ax.set_ylabel(ylabel, fontsize=FONTS["axis_label"])
     plt.tight_layout()
     legend_below(ax)
+    chart_title(fig, title)
     return fig
 
 
@@ -276,6 +279,7 @@ def waterfall_chart(
                        fontsize=FONTS["tick_label"])
     ax.set_ylabel("$ Billions", fontsize=FONTS["axis_label"])
     plt.tight_layout()
+    chart_title(fig, title)
     return fig
 
 
@@ -333,10 +337,12 @@ def horizontal_bar_ranking(
     ax.set_yticklabels(labels)
     ax.set_xlabel(xlabel, fontsize=FONTS["axis_label"])
     ax.invert_yaxis()
+    ax.set_ylim(len(labels) - 0.5, -0.5)  # tight: half a bar of padding top/bottom
 
     for i, v in enumerate(values):
         ax.text(v + max(values) * 0.01, i, f"{v:,.0f}", va="center",
                 fontsize=FONTS["value_label"])
 
     plt.tight_layout()
+    chart_title(fig, title)
     return fig
