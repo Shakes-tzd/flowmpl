@@ -45,6 +45,12 @@ COLORS: dict[str, str] = {
     "grid":       "#e0e0e0",   # gridlines
 }
 
+# Concept frame palette — matches NotebookLM whiteboard style
+CONCEPT_YELLOW: str = "#F5C842"
+CONCEPT_WHITE:  str = "#FFFFFF"
+CONCEPT_INK:    str = "#1A1A1A"   # outline/text color
+CONCEPT_MUTED:  str = "#888888"   # secondary labels
+
 # SWD gray+accent base — use for non-focus data elements.
 # Everything starts CONTEXT gray; only the story element gets color.
 # See helpers.focus_colors() for the standard application pattern.

@@ -406,7 +406,7 @@ def mix_chart(FUEL_COLORS, df_mix, stacked_bar):
         figsize=(13, 6),
         rotation=15,
     )
-    energy_fig_mix 
+    energy_fig_mix
     return
 
 
@@ -729,6 +729,328 @@ def map_chart(
         alpha=0.55,
     )
     wind_cap_fig_map
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Concept Frames (flowmpl.concept)
+
+    Whiteboard-style explainer frames — programmatic layout with no external assets needed.
+    Pass PNG icon paths (Nano Banana Pro / Gemini Image) to decorate with sketch illustrations.
+    """)
+    return
+
+
+@app.cell
+def _():
+    from flowmpl import (
+        CONCEPT_INK,
+        cascade_frame,
+        chart_scene_frame,
+        concept_frame,
+        concept_style,
+        data_moment_frame,
+        fetch_icon,
+        load_icon,
+        rhetorical_frame,
+        section_intro_frame,
+    )
+    return (
+        CONCEPT_INK,
+        cascade_frame,
+        chart_scene_frame,
+        concept_frame,
+        concept_style,
+        data_moment_frame,
+        fetch_icon,
+        load_icon,
+        rhetorical_frame,
+        section_intro_frame,
+    )
+
+
+@app.cell
+def concept_icons(CONCEPT_INK, FUEL_COLORS, fetch_icon):
+    # Fetch Tabler icons for concept frame decoration.
+    # Results are cached to ~/.cache/flowmpl/icons/ — first run needs internet.
+    # All subsequent runs are instant (disk cache, no network call).
+    icon_bolt  = fetch_icon("tabler", "bolt",                  color=FUEL_COLORS["wind"])
+    icon_solar = fetch_icon("tabler", "solar-panel",           color=FUEL_COLORS["solar"])
+    icon_wind  = fetch_icon("tabler", "building-wind-turbine", color=FUEL_COLORS["wind"])
+    icon_trend = fetch_icon("tabler", "trending-up",           color=CONCEPT_INK)
+    icon_file  = fetch_icon("tabler", "file-description",      color=CONCEPT_INK)
+    icon_coins = fetch_icon("tabler", "coins",                 color=FUEL_COLORS["solar"])
+    return icon_bolt, icon_coins, icon_file, icon_solar, icon_trend, icon_wind
+
+
+@app.cell
+def concept_example(FUEL_COLORS, concept_frame, concept_style):
+    # Custom style: wind-teal card on white background
+    _s = concept_style()
+    _s["card_color"] = FUEL_COLORS["wind"]   # teal card
+    _s["ink_color"]  = "#FFFFFF"             # white text on teal
+    concept_eg_fig = concept_frame(
+        title="The Clean Energy Transition",
+        body=(
+            "Shifting electricity generation from fossil fuels\n"
+            "to wind, solar, and nuclear — through policy,\n"
+            "investment, and large-scale deployment."
+        ),
+        arrows=[
+            {"start": (0.12, 0.74), "end": (0.34, 0.62), "label": "drives"},
+            {"start": (0.88, 0.74), "end": (0.66, 0.62), "label": "funds"},
+        ],
+        style=_s,
+        figsize=(12, 6.75),
+    )
+    concept_eg_fig
+    return
+
+
+@app.cell
+def section_intro_example(FUEL_COLORS, concept_style, section_intro_frame):
+    # Custom style: dark green background, yellow card
+    _s = concept_style()
+    _s["bg_color"]    = "#1B4332"            # dark green
+    _s["card_color"]  = FUEL_COLORS["solar"] # gold card
+    _s["ink_color"]   = "#1B4332"            # dark ink on gold card
+    _s["ghost_color"] = "#FFFFFF"            # white ghost number — contrasts with dark bg
+    section_intro_eg_fig = section_intro_frame(
+        number="3",
+        title="Energy Transition",
+        subtitle="Policy  >  Investment  >  Deployment",
+        style=_s,
+    )
+    section_intro_eg_fig
+    return
+
+
+@app.cell
+def data_moment_example(
+    FUEL_COLORS, concept_style, data_moment_frame, df_us_ts,
+    icon_bolt, icon_solar, icon_trend, icon_wind,
+):
+    _combined_2022 = int(
+        df_us_ts[df_us_ts.index.year == 2022][
+            ["wind_electricity", "solar_electricity"]
+        ]
+        .sum(axis=1)
+        .iloc[0]
+    )
+    _s = concept_style()
+    _s["stat_fill"]    = FUEL_COLORS["solar"]
+    _s["accent_color"] = FUEL_COLORS["wind"]
+    _s["stat_stroke"]  = 14
+    _s["stat_size"]    = 72
+    data_moment_eg_fig = data_moment_frame(
+        stat=f"{_combined_2022:,} TWh",
+        surrounding={
+            "top_left":     ("US WIND +\nSOLAR 2022",    icon_bolt),
+            "top_right":    ("10x GROWTH\nSINCE 2010",   icon_trend),
+            "bottom_left":  ("PASSED\nCOAL IN 2022",     icon_solar),
+            "bottom_right": ("FASTEST-GROWING\nSOURCES", icon_wind),
+        },
+        style=_s,
+    )
+    data_moment_eg_fig
+    return
+
+
+@app.cell
+def cascade_example(
+    FUEL_COLORS, cascade_frame, concept_style,
+    icon_bolt, icon_coins, icon_file, icon_solar,
+):
+    _s = concept_style()
+    _s["accent_color"] = FUEL_COLORS["wind"]
+    _s["ink_color"]    = "#1A1A1A"
+    cascade_eg_fig = cascade_frame(
+        steps=[
+            {"number": 1, "title": "Policy",     "body": "IRA,\nClean Energy Acts",   "icon": icon_file},
+            {"number": 2, "title": "Investment", "body": "Public +\nPrivate Capital",  "icon": icon_coins},
+            {"number": 3, "title": "Build",      "body": "Wind, Solar,\nStorage",      "icon": icon_solar},
+            {"number": 4, "title": "Grid Shift", "body": "Coal to Clean\nDispatch",    "icon": icon_bolt},
+        ],
+        style=_s,
+    )
+    cascade_eg_fig
+    return
+
+
+@app.cell
+def rhetorical_example(FUEL_COLORS, concept_style, rhetorical_frame):
+    # Dark background + gold ghost symbol — no card, just the statement
+    _s = concept_style()
+    _s["bg_color"]        = "#0D1B2A"            # near-black navy
+    _s["ink_color"]       = "#FFFFFF"             # white statement text
+    _s["ghost_color"]     = FUEL_COLORS["solar"]  # gold ghost symbol
+    _s["rhetorical_size"] = 44
+    rhetorical_eg_fig = rhetorical_frame(
+        text="Solar and wind are now\nthe cheapest energy\never built.",
+        ghost_symbol="$",
+        style=_s,
+    )
+    rhetorical_eg_fig
+    return
+
+
+@app.cell
+def chart_scene_example(
+    FUEL_COLORS,
+    annotated_series,
+    chart_scene_frame,
+    concept_style,
+    df_us_ts,
+):
+    # Create an inner chart to embed on the left
+    _inner = annotated_series(
+        df_us_ts,
+        columns={
+            "wind_electricity":  {"color": FUEL_COLORS["wind"],  "label": "Wind",  "linewidth": 2},
+            "solar_electricity": {"color": FUEL_COLORS["solar"], "label": "Solar", "linewidth": 2},
+        },
+        title="US Wind & Solar Generation (TWh)",
+        figsize=(7, 4),
+    )
+    # Wrap it in a scene frame with a callout card
+    _s = concept_style()
+    _s["card_color"] = FUEL_COLORS["solar"]   # gold callout card
+    _s["ink_color"]  = "#1A1A1A"
+    chart_scene_eg_fig = chart_scene_frame(
+        chart_fig=_inner,
+        callout_title="The Breakout\nMoment",
+        callout_text=(
+            "US wind + solar\ncrossed 1,000 TWh\nin 2022 — the first\ntime in history."
+        ),
+        overlay_arrow={"start": (0.46, 0.52), "end": (0.57, 0.52)},
+        style=_s,
+    )
+    chart_scene_eg_fig
+    return
+
+
+@app.cell
+def sketch_assets(CONCEPT_INK, FUEL_COLORS, load_icon):
+    # Load hand-drawn sketch SVGs from notebooks/assets/icons/.
+    # SVGs were generated by: uv run --with google-genai notebooks/build_icons.py
+    # load_icon() recolors the black paths to any target color, rasterizes via
+    # cairosvg, and caches the result — instant on repeat runs.
+    from pathlib import Path as _Path
+
+    _ICONS = _Path(__file__).parent / "assets" / "icons"
+
+    def _load(stem: str, color: str = CONCEPT_INK):
+        return load_icon(_ICONS / f"{stem}.svg", color=color, size=256)
+
+    sketch_server   = _load("server")
+    sketch_cpu      = _load("cpu")
+    sketch_database = _load("database")
+    sketch_moneybag = _load("moneybag",  color=FUEL_COLORS["solar"])
+    sketch_coins    = _load("coins",     color=FUEL_COLORS["solar"])
+    sketch_shield   = _load("shield")
+    sketch_factory  = _load("factory")
+    sketch_cloud    = _load("cloud")
+    sketch_bank     = _load("bank")
+    sketch_arrow    = _load("arrow_diagonal")
+    sketch_bolt     = _load("bolt",        color=FUEL_COLORS["wind"])
+    sketch_solar    = _load("solar_panel", color=FUEL_COLORS["solar"])
+    sketch_wind     = _load("wind_turbine", color=FUEL_COLORS["wind"])
+    return (
+        sketch_arrow, sketch_bank, sketch_bolt, sketch_cloud, sketch_coins,
+        sketch_cpu, sketch_database, sketch_factory, sketch_moneybag, sketch_server,
+        sketch_shield, sketch_solar, sketch_wind,
+    )
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ## Tariff Carve-Out Scene (chart_scene_frame + sketch assets)
+
+    Reconstruction of a NotebookLM-style explainer frame using only flowmpl primitives.
+    The bar chart and callout text are programmatic; surrounding icons and the diagonal
+    arrow are hand-drawn sketch PNGs generated via Gemini (`notebooks/assets/icons/`).
+
+    > **Assets used:** `server.png`, `cpu.png`, `database.png`, `moneybag.png`,
+    > `coins.png`, `shield.png`, `factory.png`, `cloud.png`, `bank.png`,
+    > `arrow_diagonal.png`
+    """)
+    return
+
+
+@app.cell
+def tariff_carveout_scene(
+    CONCEPT_INK, FUEL_COLORS,
+    chart_scene_frame, concept_style,
+    sketch_arrow, sketch_bank, sketch_cloud, sketch_coins,
+    sketch_cpu, sketch_database, sketch_factory, sketch_moneybag,
+    sketch_server, sketch_shield,
+):
+    import matplotlib.pyplot as plt
+
+    # ── Bar chart: Pre / Post Carve-out ───────────────────────────────────────
+    _fig_bar, _ax = plt.subplots(figsize=(5, 4.5))
+    _fig_bar.patch.set_facecolor("white")
+    _ax.set_facecolor("white")
+    _ax.bar(
+        ["Pre-\nCarve-\nout", "Post-\nCarve-\nout"],
+        [150, 450],
+        color=["#D0D0D0", FUEL_COLORS["solar"]],
+        width=0.5, edgecolor=CONCEPT_INK, linewidth=1.2,
+    )
+    _ax.set_ylabel("Relative Import\nVolume", fontsize=9)
+    _ax.set_xlabel("Policy Period", fontsize=9)
+    _ax.set_ylim(0, 560)
+    _ax.set_yticks([100, 200, 300, 400, 500])
+    for _sp in ["top", "right"]:
+        _ax.spines[_sp].set_visible(False)
+    _ax.tick_params(labelsize=8)
+    _fig_bar.tight_layout(pad=0.5)
+
+    # ── Scene frame — invisible callout card so text floats on white ──────────
+    _s = concept_style()
+    _s["card_color"] = "#FFFFFF"
+    _s["card_lw"]    = 0
+    _s["body_size"]  = 16
+
+    tariff_fig = chart_scene_frame(
+        chart_fig=_fig_bar,
+        callout_text=(
+            "U.S. imports of\ncomputer parts surged\n"
+            "after tariff carve-outs\nfor data centers."
+        ),
+        surrounding_icons=[
+            # left column — hardware stack (sketch PNGs)
+            {"xy": (0.04, 0.78), "path": sketch_server,   "zoom": 0.13},
+            {"xy": (0.04, 0.52), "path": sketch_cpu,      "zoom": 0.12},
+            {"xy": (0.04, 0.26), "path": sketch_database,  "zoom": 0.12},
+            # above chart — money bags (subsidy)
+            {"xy": (0.26, 0.93), "path": sketch_moneybag, "zoom": 0.14},
+            {"xy": (0.40, 0.91), "path": sketch_moneybag, "zoom": 0.12},
+            # below chart — coins, risk shield, factory
+            {"xy": (0.34, 0.07), "path": sketch_coins,    "zoom": 0.12},
+            {"xy": (0.48, 0.07), "path": sketch_shield,   "zoom": 0.11},
+            {"xy": (0.62, 0.07), "path": sketch_factory,  "zoom": 0.12},
+            # upper-right — cloud + state bank (above callout card)
+            {"xy": (0.74, 0.92), "path": sketch_cloud,    "zoom": 0.12},
+            {"xy": (0.88, 0.90), "path": sketch_bank,     "zoom": 0.13},
+            # diagonal arrow — sketch PNG pointing up-right (replaces programmatic arrow)
+            {"xy": (0.33, 0.57), "path": sketch_arrow,    "zoom": 0.16},
+        ],
+        chart_zoom=0.42,
+        style=_s,
+    )
+
+    # ── Text labels near the arrow ─────────────────────────────────────────────
+    _sa = tariff_fig.axes[0]
+    _sa.text(0.47, 0.77, "Subsidy",    transform=_sa.transAxes,
+             fontsize=9, ha="left", color=CONCEPT_INK, style="italic", zorder=6)
+    _sa.text(0.16, 0.47, "de-risking", transform=_sa.transAxes,
+             fontsize=9, ha="right", color=CONCEPT_INK, style="italic", zorder=6)
+
+    tariff_fig
     return
 
 
