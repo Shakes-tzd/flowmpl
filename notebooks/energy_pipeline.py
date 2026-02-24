@@ -1042,9 +1042,9 @@ def tariff_carveout_scene(
         chart_fig=_fig_bar,
         # No callout card — right-panel text is added manually for italic support
         surrounding_icons=[
-            # Arrow first so all icons render on top of it
-            # Large diagonal sweep: lower-left chart area → moneybag tip
-            {"bbox": (0.09, 0.06, 0.55, 0.80), "path": sketch_arrow},
+            # Arrow first so all icons render on top of it.
+            # alpha=0.45: solid SVG fill is heavy — partial transparency lets bars show.
+            {"bbox": (0.18, 0.18, 0.55, 0.80), "path": sketch_arrow, "alpha": 0.45},
             # Left hardware column — tall, narrow, stacked vertically
             {"bbox": (0.00, 0.73, 0.12, 0.93), "path": sketch_server},
             {"bbox": (0.00, 0.47, 0.12, 0.67), "path": sketch_cpu},
@@ -1063,7 +1063,7 @@ def tariff_carveout_scene(
             {"bbox": (0.33, 0.62, 0.50, 0.93), "path": sketch_moneybag},
             {"bbox": (0.45, 0.59, 0.60, 0.88), "path": sketch_moneybag},
         ],
-        chart_zoom=0.42,
+        chart_zoom=0.46,
     )
 
     # ── Right-panel callout text ──────────────────────────────────────────────
@@ -1084,10 +1084,11 @@ def tariff_carveout_scene(
         )
 
     # ── Scene annotation labels ────────────────────────────────────────────────
-    _sa.text(0.55, 0.59, "Subsidy",    transform=_sa.transAxes,
-             fontsize=10, ha="left", color=CONCEPT_INK, style="italic", zorder=6)
+    # "Subsidy" sits just right of the arrow tip, below the moneybags (y < 0.62)
+    _sa.text(0.56, 0.57, "Subsidy",    transform=_sa.transAxes,
+             fontsize=11, ha="left", color=CONCEPT_INK, style="italic", zorder=7)
     _sa.text(0.49, 0.38, "de-risking", transform=_sa.transAxes,
-             fontsize=10, ha="center", color=CONCEPT_INK, style="italic", zorder=6)
+             fontsize=11, ha="center", color=CONCEPT_INK, style="italic", zorder=7)
 
     tariff_fig
     return

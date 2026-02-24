@@ -955,6 +955,7 @@ def chart_scene_frame(
                 icon["path"],
                 xy=tuple(icon["xy"]) if "xy" in icon else None,
                 zoom=icon.get("zoom", 0.20),
+                alpha=icon.get("alpha", 1.0),
                 bbox=tuple(icon["bbox"]) if "bbox" in icon else None,
             )
 
