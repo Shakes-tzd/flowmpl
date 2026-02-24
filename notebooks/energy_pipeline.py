@@ -1022,22 +1022,23 @@ def tariff_carveout_scene(
             "after tariff carve-outs\nfor data centers."
         ),
         surrounding_icons=[
-            # left column — hardware stack (sketch PNGs)
-            {"xy": (0.04, 0.78), "path": sketch_server,   "zoom": 0.13},
-            {"xy": (0.04, 0.52), "path": sketch_cpu,      "zoom": 0.12},
-            {"xy": (0.04, 0.26), "path": sketch_database,  "zoom": 0.12},
-            # above chart — money bags (subsidy)
-            {"xy": (0.26, 0.93), "path": sketch_moneybag, "zoom": 0.14},
-            {"xy": (0.40, 0.91), "path": sketch_moneybag, "zoom": 0.12},
-            # below chart — coins, risk shield, factory
-            {"xy": (0.34, 0.07), "path": sketch_coins,    "zoom": 0.12},
-            {"xy": (0.48, 0.07), "path": sketch_shield,   "zoom": 0.11},
-            {"xy": (0.62, 0.07), "path": sketch_factory,  "zoom": 0.12},
-            # upper-right — cloud + state bank (above callout card)
-            {"xy": (0.74, 0.92), "path": sketch_cloud,    "zoom": 0.12},
-            {"xy": (0.88, 0.90), "path": sketch_bank,     "zoom": 0.13},
-            # diagonal arrow — sketch PNG pointing up-right (replaces programmatic arrow)
-            {"xy": (0.33, 0.57), "path": sketch_arrow,    "zoom": 0.16},
+            # Left hardware column — staggered along chart y-axis
+            {"xy": (0.06, 0.80), "path": sketch_server,   "zoom": 0.28},
+            {"xy": (0.06, 0.53), "path": sketch_cpu,      "zoom": 0.25},
+            {"xy": (0.06, 0.22), "path": sketch_database,  "zoom": 0.25},
+            # Moneybags — at the arrow tip, above Post bar
+            {"xy": (0.37, 0.90), "path": sketch_moneybag, "zoom": 0.30},
+            {"xy": (0.50, 0.87), "path": sketch_moneybag, "zoom": 0.25},
+            # De-risking zone — right of chart, left of callout card (x < 0.56)
+            {"xy": (0.50, 0.52), "path": sketch_coins,    "zoom": 0.25},
+            {"xy": (0.50, 0.30), "path": sketch_shield,   "zoom": 0.22},
+            # Factory — bottom center below bars
+            {"xy": (0.38, 0.10), "path": sketch_factory,  "zoom": 0.25},
+            # Cloud + bank — upper right
+            {"xy": (0.76, 0.91), "path": sketch_cloud,    "zoom": 0.20},
+            {"xy": (0.91, 0.88), "path": sketch_bank,     "zoom": 0.25},
+            # Arrow — large diagonal sweep from Pre-bar level to moneybag tip
+            {"xy": (0.35, 0.58), "path": sketch_arrow,    "zoom": 0.70},
         ],
         chart_zoom=0.42,
         style=_s,
@@ -1045,10 +1046,10 @@ def tariff_carveout_scene(
 
     # ── Text labels near the arrow ─────────────────────────────────────────────
     _sa = tariff_fig.axes[0]
-    _sa.text(0.47, 0.77, "Subsidy",    transform=_sa.transAxes,
-             fontsize=9, ha="left", color=CONCEPT_INK, style="italic", zorder=6)
-    _sa.text(0.16, 0.47, "de-risking", transform=_sa.transAxes,
-             fontsize=9, ha="right", color=CONCEPT_INK, style="italic", zorder=6)
+    _sa.text(0.56, 0.81, "Subsidy",    transform=_sa.transAxes,
+             fontsize=10, ha="left", color=CONCEPT_INK, style="italic", zorder=6)
+    _sa.text(0.43, 0.39, "de-risking", transform=_sa.transAxes,
+             fontsize=10, ha="left", color=CONCEPT_INK, style="italic", zorder=6)
 
     tariff_fig
     return
