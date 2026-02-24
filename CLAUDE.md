@@ -155,6 +155,32 @@ no regressions.
 
 ---
 
+## Design Signature
+
+Five decisions make every chart recognisably *this project's* work:
+
+1. **Background** — `PAPER = "#f5f1eb"` on figure, axes, and savefig.
+   Set in `shakes.mplstyle`. Never override to white for publication charts.
+
+2. **Typography** — DM Sans via `font.sans-serif` fallback chain.
+   Falls back to DejaVu Sans in CI where DM Sans is not installed.
+   Do not reintroduce STIXGeneral.
+
+3. **Accent** — `COLORS["accent"] = "#b84c2a"`. Matches `--accent` in site CSS.
+   This is the single story color. `COLORS["negative"]` (#EE6677) is for bad values only.
+
+4. **Ink** — `INK = "#1a1917"`. All primary text. Matches `--ink` in site CSS.
+   Never use pure black (#000000).
+
+5. **Rule** — `RULE = "#d6cfc7"`. Gridlines and `add_rule()` decoration.
+   Matches `--rule` in site CSS.
+
+Optional elements (explicit, not automatic):
+- `add_source(fig, "Source: EIA Form 860")` — bottom-right attribution
+- `add_rule(ax)` — thin 1px horizontal rule at bottom of chart
+
+---
+
 ## What Not To Do
 
 - Do not add mandatory dependencies beyond `matplotlib` and `numpy` — keep the core

@@ -1,26 +1,31 @@
 # flowmpl Matplotlib style — aligned with the design system in design.py
 # Applied via flowmpl.apply_style() at the start of a notebook or script.
 
-# ── Colors ────────────────────────────────────────────────────────────
-xtick.color: 323034
-ytick.color: 323034
-text.color: 323034
+# ── Backgrounds — warm paper signature ───────────────────────────────
+figure.facecolor: f5f1eb
+axes.facecolor:   f5f1eb
+savefig.facecolor: f5f1eb
+
+# ── Colors — aligned with site CSS variables ─────────────────────────
+xtick.color: 1a1917
+ytick.color: 1a1917
+text.color: 1a1917
 lines.markeredgecolor: black
 patch.facecolor: 4477AA
 patch.force_edgecolor: True
 patch.linewidth: 0.8
 scatter.edgecolors: white
-grid.color: e0e0e0
-axes.labelcolor: 323034
-axes.edgecolor: 323034
+grid.color: d6cfc7
+axes.labelcolor: 1a1917
+axes.edgecolor: 1a1917
 
 # ── Color cycle — Paul Tol qualitative (colorblind-safe) ─────────────
 axes.prop_cycle: cycler('color', ['4477AA', 'EE6677', '228833', 'CCBB44', '66CCEE', 'AA3377', 'BBBBBB', 'EE8866'])
 
-# ── Font ──────────────────────────────────────────────────────────────
+# ── Font — DM Sans with graceful fallback ────────────────────────────
 font.size: 12
-font.family: STIXGeneral
-mathtext.fontset: stix
+font.family: sans-serif
+font.sans-serif: DM Sans, DejaVu Sans, Helvetica, Arial, sans-serif
 text.usetex: False
 
 # ── Axes ──────────────────────────────────────────────────────────────

@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING
 import matplotlib.pyplot as plt
 import numpy as np
 
-from flowmpl.design import COLORS, FIGSIZE, FONTS
+from flowmpl.design import COLORS, FIGSIZE, FONTS, PAPER
 from flowmpl.helpers import chart_title, legend_below
 from flowmpl.palettes import CATEGORICAL
 
@@ -76,7 +76,7 @@ def annotated_series(
                 fontsize=FONTS["annotation"],
                 fontweight="bold",
                 bbox=dict(
-                    boxstyle="round,pad=0.3", fc="white", ec="black", alpha=0.8
+                    boxstyle="round,pad=0.3", fc=PAPER, ec="black", alpha=0.8
                 ),
             )
 

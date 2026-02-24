@@ -36,14 +36,23 @@ COLORS: dict[str, str] = {
     "positive":   "#228833",   # growth, increase, good (Paul Tol green)
     "negative":   "#EE6677",   # decline, decrease, bad  (Paul Tol red)
     "neutral":    "#888888",   # neither good nor bad
-    "accent":     "#c44e52",   # highlight, call attention (warm red)
+    "accent":     "#b84c2a",   # highlight, call attention (matches --accent on site)
     "muted":      "#cccccc",   # de-emphasized, fallback
     "reference":  "#999999",   # reference lines, thresholds
-    "text_dark":  "#323034",   # primary text on white bg
+    "text_dark":  "#1a1917",   # primary text (matches --ink on site)
     "text_light": "#666666",   # secondary text, annotations
-    "background": "#f5f5f5",   # map fills, chart backgrounds
-    "grid":       "#e0e0e0",   # gridlines
+    "background": "#f5f1eb",   # map fills, chart backgrounds (matches --paper on site)
+    "grid":       "#d6cfc7",   # gridlines (matches --rule on site)
 }
+
+# ── Site identity tokens — 1:1 with CSS variables on the published site ───────
+# These map directly to the CSS custom properties in the site's stylesheet.
+# Use these in chart code instead of hardcoding hex values.
+PAPER:     str = "#f5f1eb"   # --paper     figure and axes background
+INK:       str = "#1a1917"   # --ink       primary text, ticks, spines
+INK_MID:   str = "#4d4a46"   # --ink-mid   secondary labels, subtitles
+INK_LIGHT: str = "#9a9490"   # --ink-light captions, source notes
+RULE:      str = "#d6cfc7"   # --rule      gridlines, thin decorative rules
 
 # Concept frame palette — matches NotebookLM whiteboard style
 CONCEPT_YELLOW: str = "#F5C842"

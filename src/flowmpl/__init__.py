@@ -40,12 +40,19 @@ from flowmpl.design import (
     FLOW_EDGE_FONT_SIZE,
     FLOW_FONT_SIZE,
     FONTS,
+    INK,
+    INK_LIGHT,
+    INK_MID,
     LEGEND_DEFAULTS,
+    PAPER,
+    RULE,
     SCATTER_DEFAULTS,
     apply_style,
 )
 from flowmpl.flow import flow_diagram
 from flowmpl.helpers import (
+    add_rule,
+    add_source,
     annotate_point,
     chart_title,
     focus_colors,
@@ -77,6 +84,12 @@ __all__ = [
     "BAR_DEFAULTS",
     "LEGEND_DEFAULTS",
     "SCATTER_DEFAULTS",
+    # Site identity tokens
+    "PAPER",
+    "INK",
+    "INK_MID",
+    "INK_LIGHT",
+    "RULE",
     # Palettes
     "CATEGORICAL",
     "COMPANY_COLORS",
@@ -86,6 +99,8 @@ __all__ = [
     "company_label",
     "fuel_color",
     # Helpers
+    "add_rule",
+    "add_source",
     "annotate_point",
     "chart_title",
     "fetch_icon",

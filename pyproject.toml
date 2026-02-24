@@ -7,7 +7,7 @@ packages = ["src/flowmpl"]
 
 [project]
 name = "flowmpl"
-version = "0.2.0"
+version = "0.3.0"
 description = "Matplotlib design system and flow diagram renderer for analytical publications"
 requires-python = ">=3.11"
 license = {text = "MIT"}

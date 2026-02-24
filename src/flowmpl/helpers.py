@@ -11,7 +11,8 @@ from typing import TYPE_CHECKING
 
 import matplotlib.pyplot as plt
 
-from flowmpl.design import COLORS, CONTEXT, FONTS, LEGEND_DEFAULTS
+from flowmpl.design import COLORS, CONTEXT, FONTS, INK_LIGHT, LEGEND_DEFAULTS
+from flowmpl.design import RULE as _RULE
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
@@ -146,8 +147,9 @@ def annotate_point(
     color = color or COLORS["text_light"]
     fontsize = fontsize or FONTS["annotation"]
 
+    from flowmpl.design import PAPER
     bbox_props = (
-        {"boxstyle": "round,pad=0.3", "fc": "white", "ec": color, "alpha": 0.8}
+        {"boxstyle": "round,pad=0.3", "fc": PAPER, "ec": color, "alpha": 0.8}
         if bbox
         else None
     )
@@ -222,6 +224,69 @@ def reference_line(
                 fontsize=FONTS["small"], color=color, fontweight="bold",
                 va=_va, ha="left",
             )
+
+
+def add_source(
+    fig: plt.Figure,
+    text: str,
+    *,
+    color: str | None = None,
+    fontsize: int | None = None,
+) -> None:
+    """Add a source attribution line at bottom-right of the figure.
+
+    Parameters
+    ----------
+    fig : Figure
+    text : str
+        e.g. "Source: EIA Form 860, 2024"
+    color : str, optional
+        Defaults to INK_LIGHT.
+    fontsize : int, optional
+        Defaults to FONTS["caption"].
+    """
+    fig.text(
+        0.98, 0.012,
+        text,
+        ha="right", va="bottom",
+        fontsize=fontsize or FONTS["caption"],
+        color=color or INK_LIGHT,
+        transform=fig.transFigure,
+    )
+
+
+def add_rule(
+    ax: plt.Axes,
+    *,
+    color: str | None = None,
+    linewidth: float = 1.0,
+    position: str = "bottom",
+) -> None:
+    """Draw a thin horizontal rule at the top or bottom of the axes frame.
+
+    A single line used consistently is the lightest possible signature element.
+
+    Parameters
+    ----------
+    ax : Axes
+    color : str, optional
+        Defaults to RULE (matches site --rule).
+    linewidth : float
+        Default 1.0.
+    position : str
+        "top" or "bottom". Default "bottom".
+    """
+    from matplotlib.lines import Line2D
+    c = color or _RULE
+    pos = ax.get_position()
+    y = pos.y0 if position == "bottom" else pos.y1
+    ax.figure.add_artist(
+        Line2D(
+            [pos.x0, pos.x1], [y, y],
+            transform=ax.figure.transFigure,
+            color=c, linewidth=linewidth, clip_on=False,
+        )
+    )
 
 
 def legend_below(
