@@ -1004,7 +1004,6 @@ def tariff_carveout_scene(
     CONCEPT_INK,
     FUEL_COLORS,
     chart_scene_frame,
-    concept_style,
     sketch_arrow,
     sketch_bank,
     sketch_cloud,
@@ -1037,48 +1036,58 @@ def tariff_carveout_scene(
     _ax.tick_params(labelsize=8)
     _fig_bar.tight_layout(pad=0.5)
 
-    # ── Scene frame — invisible callout card so text floats on white ──────────
-    _s = concept_style()
-    _s["card_color"] = "#FFFFFF"
-    _s["card_lw"]    = 0
-    _s["body_size"]  = 16
-
+    # ── Scene frame — icons only; right-panel text added manually below ───────
+    # Drawing order matters: earlier entries are lower in z (behind later ones).
     tariff_fig = chart_scene_frame(
         chart_fig=_fig_bar,
-        callout_text=(
-            "U.S. imports of\ncomputer parts surged\n"
-            "after tariff carve-outs\nfor data centers."
-        ),
+        # No callout card — right-panel text is added manually for italic support
         surrounding_icons=[
-            # Left hardware column — staggered along chart y-axis
-            # bbox = (x0, y0, x1, y1) in axes-fraction coordinates
-            {"bbox": (0.03, 0.75, 0.09, 0.85), "path": sketch_server},
-            {"bbox": (0.03, 0.48, 0.09, 0.58), "path": sketch_cpu},
-            {"bbox": (0.03, 0.17, 0.09, 0.27), "path": sketch_database},
-            # Moneybags — above Post bar, top-center of chart area
-            {"bbox": (0.34, 0.84, 0.40, 0.96), "path": sketch_moneybag},
-            {"bbox": (0.47, 0.82, 0.53, 0.92), "path": sketch_moneybag},
-            # De-risking zone — right of chart, left of callout card (x < 0.56)
-            {"bbox": (0.47, 0.47, 0.53, 0.57), "path": sketch_coins},
-            {"bbox": (0.48, 0.26, 0.52, 0.34), "path": sketch_shield},
-            # Factory — bottom center below bars
-            {"bbox": (0.35, 0.05, 0.41, 0.15), "path": sketch_factory},
-            # Cloud + bank — upper right
-            {"bbox": (0.74, 0.87, 0.78, 0.95), "path": sketch_cloud},
-            {"bbox": (0.88, 0.83, 0.94, 0.93), "path": sketch_bank},
-            # Arrow — large diagonal sweep from Pre-bar level to moneybag tip
-            {"bbox": (0.31, 0.50, 0.39, 0.66), "path": sketch_arrow},
+            # Arrow first so all icons render on top of it
+            # Large diagonal sweep: lower-left chart area → moneybag tip
+            {"bbox": (0.09, 0.06, 0.55, 0.80), "path": sketch_arrow},
+            # Left hardware column — tall, narrow, stacked vertically
+            {"bbox": (0.00, 0.73, 0.12, 0.93), "path": sketch_server},
+            {"bbox": (0.00, 0.47, 0.12, 0.67), "path": sketch_cpu},
+            {"bbox": (0.00, 0.08, 0.12, 0.28), "path": sketch_database},
+            # Second server at top-center (above chart bars, echoes reference)
+            {"bbox": (0.20, 0.79, 0.32, 0.97), "path": sketch_server},
+            # Factory — wide footprint at bottom, below the bars
+            {"bbox": (0.28, 0.02, 0.54, 0.22), "path": sketch_factory},
+            # De-risking zone: coins above, shield below (right of bars)
+            {"bbox": (0.49, 0.40, 0.62, 0.58), "path": sketch_coins},
+            {"bbox": (0.50, 0.22, 0.61, 0.38), "path": sketch_shield},
+            # Right panel: cloud (upper corner) + bank
+            {"bbox": (0.70, 0.84, 0.82, 0.97), "path": sketch_cloud},
+            {"bbox": (0.82, 0.76, 0.96, 0.95), "path": sketch_bank},
+            # Moneybags LAST — rendered on top, at the arrow tip (focal point)
+            {"bbox": (0.33, 0.62, 0.50, 0.93), "path": sketch_moneybag},
+            {"bbox": (0.45, 0.59, 0.60, 0.88), "path": sketch_moneybag},
         ],
         chart_zoom=0.42,
-        style=_s,
     )
 
-    # ── Text labels near the arrow ─────────────────────────────────────────────
+    # ── Right-panel callout text ──────────────────────────────────────────────
+    # Split into separate calls so "tariff carve-outs" can be italic
     _sa = tariff_fig.axes[0]
-    _sa.text(0.56, 0.81, "Subsidy",    transform=_sa.transAxes,
+    for _line, _y, _kw in [
+        ("U.S. imports of computer", 0.63, {}),
+        ("parts surged after",       0.53, {}),
+        ("tariff carve-outs",        0.44, {"style": "italic"}),
+        ("for data centers.",        0.35, {}),
+    ]:
+        _sa.text(
+            0.79, _y, _line,
+            transform=_sa.transAxes,
+            ha="center", va="center",
+            fontsize=20, color=CONCEPT_INK,
+            zorder=6, **_kw,
+        )
+
+    # ── Scene annotation labels ────────────────────────────────────────────────
+    _sa.text(0.55, 0.59, "Subsidy",    transform=_sa.transAxes,
              fontsize=10, ha="left", color=CONCEPT_INK, style="italic", zorder=6)
-    _sa.text(0.43, 0.39, "de-risking", transform=_sa.transAxes,
-             fontsize=10, ha="left", color=CONCEPT_INK, style="italic", zorder=6)
+    _sa.text(0.49, 0.38, "de-risking", transform=_sa.transAxes,
+             fontsize=10, ha="center", color=CONCEPT_INK, style="italic", zorder=6)
 
     tariff_fig
     return
