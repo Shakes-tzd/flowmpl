@@ -103,6 +103,45 @@ def _s(overrides: dict | None) -> dict:
 
 
 # ───────────────────────────────────────────────────────────────────────────
+# chart_scene_frame layout zones (axes-fraction bounding boxes)
+# ───────────────────────────────────────────────────────────────────────────
+
+CHART_SCENE_LAYOUT: dict[str, tuple[float, float, float, float]] = {
+    # Full left panel that hosts the embedded chart
+    "chart":        (0.02, 0.06, 0.54, 0.96),
+    # Vertical icon strip to the left of the chart
+    "left_strip":   (0.00, 0.06, 0.10, 0.96),
+    # Horizontal banner above the chart area
+    "top_bar":      (0.10, 0.88, 0.54, 0.98),
+    # Horizontal banner below the chart area
+    "bottom_bar":   (0.10, 0.02, 0.54, 0.12),
+    # Transition zone between chart and callout card (de-risking icons)
+    "derisk_zone":  (0.44, 0.15, 0.58, 0.88),
+    # Space above the callout card (cloud, bank logos, etc.)
+    "upper_right":  (0.56, 0.82, 0.98, 0.98),
+    # Callout card region — text lives here; avoid placing icons here
+    "callout":      (0.56, 0.20, 0.96, 0.80),
+}
+"""Named bounding-box zones for :func:`chart_scene_frame`.
+
+Each value is ``(x0, y0, x1, y1)`` in axes-fraction coordinates (0–1).
+Pass one of these tuples as the ``"bbox"`` key in a ``surrounding_icons``
+entry to place an icon inside a semantically named region::
+
+    surrounding_icons=[
+        {"path": server_icon, "bbox": CHART_SCENE_LAYOUT["left_strip"]},
+        {"path": cloud_icon,  "bbox": CHART_SCENE_LAYOUT["upper_right"]},
+    ]
+
+For precise placement within a zone, compute a sub-rectangle manually::
+
+    lx0, ly0, lx1, ly1 = CHART_SCENE_LAYOUT["left_strip"]
+    # Place server in the top third of the left strip
+    {"path": server_icon, "bbox": (lx0, ly0 + 0.6*(ly1-ly0), lx1, ly1)}
+"""
+
+
+# ───────────────────────────────────────────────────────────────────────────
 # Internal compositing primitives
 # ───────────────────────────────────────────────────────────────────────────
 
@@ -110,16 +149,70 @@ def _s(overrides: dict | None) -> dict:
 def _place_asset(
     ax: plt.Axes,
     image: Path | np.ndarray,
-    xy: tuple[float, float],
+    xy: tuple[float, float] | None = None,
     zoom: float = 0.3,
     alpha: float = 1.0,
+    bbox: tuple[float, float, float, float] | None = None,
 ) -> None:
     """Position an image at normalised axes-fraction coordinates (0–1 range).
 
     ``image`` may be a file path (PNG/JPEG) **or** a numpy RGBA array as
-    returned by :func:`flowmpl.fetch_icon`.
+    returned by :func:`flowmpl.load_icon`.
+
+    Placement modes
+    ---------------
+    bbox (recommended for AI agents)
+        Pass ``bbox=(x0, y0, x1, y1)`` in axes-fraction coordinates.  The
+        image is PIL-resized to fill the rectangle exactly and placed with
+        ``zoom=1.0``.  The placement is geometrically self-describing —
+        no calibration renders required.
+
+        Aspect-ratio note: for square icons on a 12 × 6.75 figure the
+        display-neutral rectangle has ``x_span ≈ 0.60 × y_span`` (the figure
+        is wider than tall).  Equal x and y spans produce a portrait-stretched
+        icon.  Use the conversion formula ``x_span = y_span * fig_h / fig_w``
+        to preserve a square appearance.
+
+    zoom (legacy)
+        Pass ``xy=(cx, cy)`` and ``zoom`` to scale the image relative to its
+        natural pixel size.  Requires empirical calibration; prefer ``bbox``
+        for new work.
     """
+    if bbox is None and xy is None:
+        raise ValueError("_place_asset: either xy or bbox must be provided")
+
     img = image if isinstance(image, np.ndarray) else imread(str(image))
+
+    if bbox is not None:
+        x0, y0, x1, y1 = bbox
+        # Resize image to fill the bbox exactly.
+        # OffsetImage at zoom=1.0 → 1 image pixel = 1 display pixel.
+        # Target pixel size = bbox fraction × axes display pixel size.
+        fig = ax.get_figure()
+        fig_w_in, fig_h_in = fig.get_size_inches()
+        dpi = fig.get_dpi()
+        pos = ax.get_position()  # axes bounds as figure fraction
+        target_w = max(1, int(round((x1 - x0) * pos.width  * fig_w_in * dpi)))
+        target_h = max(1, int(round((y1 - y0) * pos.height * fig_h_in * dpi)))
+
+        try:
+            from PIL import Image as _PILImage  # noqa: PLC0415
+        except ImportError as exc:
+            raise ImportError(
+                "bbox placement requires Pillow.\n"
+                "Install it with:  uv pip install 'flowmpl[icons]'"
+            ) from exc
+
+        if img.dtype in (np.float32, np.float64):
+            img_u8 = (np.clip(img, 0, 1) * 255).astype(np.uint8)
+        else:
+            img_u8 = img.astype(np.uint8)
+        pil_img = _PILImage.fromarray(img_u8)
+        pil_img = pil_img.resize((target_w, target_h), _PILImage.LANCZOS)
+        img = np.array(pil_img).astype(np.float32) / 255.0
+        xy = ((x0 + x1) / 2, (y0 + y1) / 2)
+        zoom = 1.0  # image already sized to target dimensions
+
     oi = OffsetImage(img, zoom=zoom, alpha=alpha)
     ab = AnnotationBbox(
         oi, xy,
@@ -787,6 +880,7 @@ def chart_scene_frame(
     chart_zoom: float = 0.38,
     style: dict | None = None,
     figsize: tuple[float, float] = (12, 6.75),
+    debug_layout: bool = False,
 ) -> plt.Figure:
     """Embed a chart in a scene context: chart left, callout card right.
 
@@ -808,13 +902,25 @@ def chart_scene_frame(
         chart_fig:         A ``plt.Figure`` to embed on the left side.
         callout_title:     Bold title for the right callout panel.
         callout_text:      Narrative body text for the right callout panel.
-        surrounding_icons: List of dicts with ``"xy": (x, y)`` (axes fraction)
-                           and ``"path": Path``. Optional ``"zoom": float``.
+        surrounding_icons: List of dicts. Each dict must have ``"path": Path``
+                           and either:
+
+                           * ``"bbox": (x0, y0, x1, y1)`` — axes-fraction
+                             rectangle **(recommended; AI-legible)**.  The icon
+                             is PIL-resized to fill the rectangle exactly.  See
+                             :data:`CHART_SCENE_LAYOUT` for predefined zones.
+                           * ``"xy": (x, y)`` and optional ``"zoom": float``
+                             (legacy; icon centred at xy with given scale).
         overlay_arrow:     Dict with ``"start"`` and ``"end"`` (axes-fraction
                            tuples). Optional ``"label": str``, ``"rad": float``.
         chart_zoom:        OffsetImage zoom for the embedded chart (default 0.38).
         style:             Style overrides. See :func:`concept_style`.
         figsize:           Figure dimensions in inches.
+        debug_layout:      When ``True``, draw labeled red-dashed rectangles for
+                           every :data:`CHART_SCENE_LAYOUT` zone and blue dash-dot
+                           outlines for every icon placed via ``"bbox"``.  Pass
+                           ``debug_layout=True`` during design; remove for final
+                           output.
 
     Returns:
         plt.Figure
@@ -844,7 +950,13 @@ def chart_scene_frame(
 
     if surrounding_icons:
         for icon in surrounding_icons:
-            _place_asset(ax, icon["path"], tuple(icon["xy"]), zoom=icon.get("zoom", 0.20))
+            _place_asset(
+                ax,
+                icon["path"],
+                xy=tuple(icon["xy"]) if "xy" in icon else None,
+                zoom=icon.get("zoom", 0.20),
+                bbox=tuple(icon["bbox"]) if "bbox" in icon else None,
+            )
 
     if overlay_arrow:
         _dashed_arrow(
@@ -887,6 +999,49 @@ def chart_scene_frame(
                 multialignment="center",
                 zorder=4,
             )
+
+    if debug_layout:
+        # Named zone outlines (red dashed)
+        for zone_name, (zx0, zy0, zx1, zy1) in CHART_SCENE_LAYOUT.items():
+            ax.add_patch(mpatches.FancyBboxPatch(
+                (zx0, zy0), zx1 - zx0, zy1 - zy0,
+                boxstyle="square,pad=0",
+                facecolor="none",
+                edgecolor="#CC0000",
+                linewidth=0.8,
+                linestyle="--",
+                transform=ax.transAxes,
+                zorder=14,
+            ))
+            ax.text(
+                zx0 + 0.005, zy1 - 0.01, zone_name,
+                transform=ax.transAxes,
+                ha="left", va="top",
+                fontsize=6.5, color="#CC0000",
+                alpha=0.85, zorder=15,
+            )
+        # Icon bbox outlines (blue dash-dot)
+        if surrounding_icons:
+            for i, icon in enumerate(surrounding_icons):
+                if "bbox" in icon:
+                    bx0, by0, bx1, by1 = icon["bbox"]
+                    ax.add_patch(mpatches.FancyBboxPatch(
+                        (bx0, by0), bx1 - bx0, by1 - by0,
+                        boxstyle="square,pad=0",
+                        facecolor="none",
+                        edgecolor="#0055CC",
+                        linewidth=1.2,
+                        linestyle="-.",
+                        transform=ax.transAxes,
+                        zorder=14,
+                    ))
+                    ax.text(
+                        (bx0 + bx1) / 2, (by0 + by1) / 2, str(i),
+                        transform=ax.transAxes,
+                        ha="center", va="center",
+                        fontsize=7, color="#0055CC",
+                        zorder=15,
+                    )
 
     fig.tight_layout(pad=0)
     return fig

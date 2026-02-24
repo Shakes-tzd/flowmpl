@@ -21,7 +21,7 @@ dependencies = [
 [project.optional-dependencies]
 charts = ["pandas>=2.0"]
 maps = ["geopandas>=1.0", "requests>=2.31"]
-icons = ["pyconify>=0.1", "cairosvg>=2.7"]
+icons = ["pyconify>=0.1", "cairosvg>=2.7", "Pillow>=9.0"]
 all = ["flowmpl[charts,maps,icons]"]
 dev = ["ruff>=0.3", "mypy>=1.8", "marimo>=0.10", "flowmpl[charts,maps,icons,examples]"]
 examples = ["marimo>=0.10", "dlt[duckdb]>=1.0"]

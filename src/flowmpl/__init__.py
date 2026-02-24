@@ -18,6 +18,7 @@ from flowmpl.charts import (
     waterfall_chart,
 )
 from flowmpl.concept import (
+    CHART_SCENE_LAYOUT,
     cascade_frame,
     chart_scene_frame,
     comparison_frame,
@@ -116,4 +117,6 @@ __all__ = [
     "CONCEPT_MUTED",
     "CONCEPT_WHITE",
     "CONCEPT_YELLOW",
+    # Concept layout
+    "CHART_SCENE_LAYOUT",
 ]

@@ -440,6 +440,7 @@ all = [
     { name = "cairosvg" },
     { name = "geopandas" },
     { name = "pandas" },
+    { name = "pillow" },
     { name = "pyconify" },
     { name = "requests" },
 ]
@@ -453,6 +454,7 @@ dev = [
     { name = "marimo" },
     { name = "mypy" },
     { name = "pandas" },
+    { name = "pillow" },
     { name = "pyconify" },
     { name = "requests" },
     { name = "ruff" },
@@ -463,6 +465,7 @@ examples = [
 ]
 icons = [
     { name = "cairosvg" },
+    { name = "pillow" },
     { name = "pyconify" },
 ]
 maps = [
@@ -483,6 +486,7 @@ requires-dist = [
     { name = "mypy", marker = "extra == 'dev'", specifier = ">=1.8" },
     { name = "numpy", specifier = ">=1.24" },
     { name = "pandas", marker = "extra == 'charts'", specifier = ">=2.0" },
+    { name = "pillow", marker = "extra == 'icons'", specifier = ">=9.0" },
     { name = "pyconify", marker = "extra == 'icons'", specifier = ">=0.1" },
     { name = "requests", marker = "extra == 'maps'", specifier = ">=2.31" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.3" },

@@ -757,6 +757,7 @@ def _():
         rhetorical_frame,
         section_intro_frame,
     )
+
     return (
         CONCEPT_INK,
         cascade_frame,
@@ -829,8 +830,14 @@ def section_intro_example(FUEL_COLORS, concept_style, section_intro_frame):
 
 @app.cell
 def data_moment_example(
-    FUEL_COLORS, concept_style, data_moment_frame, df_us_ts,
-    icon_bolt, icon_solar, icon_trend, icon_wind,
+    FUEL_COLORS,
+    concept_style,
+    data_moment_frame,
+    df_us_ts,
+    icon_bolt,
+    icon_solar,
+    icon_trend,
+    icon_wind,
 ):
     _combined_2022 = int(
         df_us_ts[df_us_ts.index.year == 2022][
@@ -860,8 +867,13 @@ def data_moment_example(
 
 @app.cell
 def cascade_example(
-    FUEL_COLORS, cascade_frame, concept_style,
-    icon_bolt, icon_coins, icon_file, icon_solar,
+    FUEL_COLORS,
+    cascade_frame,
+    concept_style,
+    icon_bolt,
+    icon_coins,
+    icon_file,
+    icon_solar,
 ):
     _s = concept_style()
     _s["accent_color"] = FUEL_COLORS["wind"]
@@ -958,9 +970,16 @@ def sketch_assets(CONCEPT_INK, FUEL_COLORS, load_icon):
     sketch_solar    = _load("solar_panel", color=FUEL_COLORS["solar"])
     sketch_wind     = _load("wind_turbine", color=FUEL_COLORS["wind"])
     return (
-        sketch_arrow, sketch_bank, sketch_bolt, sketch_cloud, sketch_coins,
-        sketch_cpu, sketch_database, sketch_factory, sketch_moneybag, sketch_server,
-        sketch_shield, sketch_solar, sketch_wind,
+        sketch_arrow,
+        sketch_bank,
+        sketch_cloud,
+        sketch_coins,
+        sketch_cpu,
+        sketch_database,
+        sketch_factory,
+        sketch_moneybag,
+        sketch_server,
+        sketch_shield,
     )
 
 
@@ -982,11 +1001,20 @@ def _(mo):
 
 @app.cell
 def tariff_carveout_scene(
-    CONCEPT_INK, FUEL_COLORS,
-    chart_scene_frame, concept_style,
-    sketch_arrow, sketch_bank, sketch_cloud, sketch_coins,
-    sketch_cpu, sketch_database, sketch_factory, sketch_moneybag,
-    sketch_server, sketch_shield,
+    CONCEPT_INK,
+    FUEL_COLORS,
+    chart_scene_frame,
+    concept_style,
+    sketch_arrow,
+    sketch_bank,
+    sketch_cloud,
+    sketch_coins,
+    sketch_cpu,
+    sketch_database,
+    sketch_factory,
+    sketch_moneybag,
+    sketch_server,
+    sketch_shield,
 ):
     import matplotlib.pyplot as plt
 
@@ -1023,22 +1051,23 @@ def tariff_carveout_scene(
         ),
         surrounding_icons=[
             # Left hardware column — staggered along chart y-axis
-            {"xy": (0.06, 0.80), "path": sketch_server,   "zoom": 0.28},
-            {"xy": (0.06, 0.53), "path": sketch_cpu,      "zoom": 0.25},
-            {"xy": (0.06, 0.22), "path": sketch_database,  "zoom": 0.25},
-            # Moneybags — at the arrow tip, above Post bar
-            {"xy": (0.37, 0.90), "path": sketch_moneybag, "zoom": 0.30},
-            {"xy": (0.50, 0.87), "path": sketch_moneybag, "zoom": 0.25},
+            # bbox = (x0, y0, x1, y1) in axes-fraction coordinates
+            {"bbox": (0.03, 0.75, 0.09, 0.85), "path": sketch_server},
+            {"bbox": (0.03, 0.48, 0.09, 0.58), "path": sketch_cpu},
+            {"bbox": (0.03, 0.17, 0.09, 0.27), "path": sketch_database},
+            # Moneybags — above Post bar, top-center of chart area
+            {"bbox": (0.34, 0.84, 0.40, 0.96), "path": sketch_moneybag},
+            {"bbox": (0.47, 0.82, 0.53, 0.92), "path": sketch_moneybag},
             # De-risking zone — right of chart, left of callout card (x < 0.56)
-            {"xy": (0.50, 0.52), "path": sketch_coins,    "zoom": 0.25},
-            {"xy": (0.50, 0.30), "path": sketch_shield,   "zoom": 0.22},
+            {"bbox": (0.47, 0.47, 0.53, 0.57), "path": sketch_coins},
+            {"bbox": (0.48, 0.26, 0.52, 0.34), "path": sketch_shield},
             # Factory — bottom center below bars
-            {"xy": (0.38, 0.10), "path": sketch_factory,  "zoom": 0.25},
+            {"bbox": (0.35, 0.05, 0.41, 0.15), "path": sketch_factory},
             # Cloud + bank — upper right
-            {"xy": (0.76, 0.91), "path": sketch_cloud,    "zoom": 0.20},
-            {"xy": (0.91, 0.88), "path": sketch_bank,     "zoom": 0.25},
+            {"bbox": (0.74, 0.87, 0.78, 0.95), "path": sketch_cloud},
+            {"bbox": (0.88, 0.83, 0.94, 0.93), "path": sketch_bank},
             # Arrow — large diagonal sweep from Pre-bar level to moneybag tip
-            {"xy": (0.35, 0.58), "path": sketch_arrow,    "zoom": 0.70},
+            {"bbox": (0.31, 0.50, 0.39, 0.66), "path": sketch_arrow},
         ],
         chart_zoom=0.42,
         style=_s,
