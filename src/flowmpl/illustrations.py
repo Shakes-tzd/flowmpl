@@ -389,6 +389,7 @@ def annotate_illustration(
     figsize: tuple[float, float] | None = None,
     bg_color: str | None = None,
     dpi: int = 150,
+    show_grid: bool = False,
 ) -> bytes:
     """Composite a (transparent) illustration with matplotlib text annotations.
 
@@ -460,7 +461,24 @@ def annotate_illustration(
     ax.set_facecolor(bg_color if bg_color else PAPER)
 
     ax.imshow(img_array, aspect="auto", interpolation="antialiased")
-    ax.set_axis_off()
+
+    if show_grid:
+        from flowmpl.design import INK_LIGHT  # noqa: PLC0415
+        # Tick positions in data (pixel) coords; labels in axes-fraction (0.0–1.0)
+        x_ticks = [w * i / 10 for i in range(11)]
+        y_ticks = [h * i / 10 for i in range(11)]
+        # imshow origin='upper': pixel 0 is the TOP, so y fraction is inverted
+        ax.set_xticks(x_ticks)
+        ax.set_yticks(y_ticks)
+        ax.set_xticklabels([f"{i / 10:.1f}" for i in range(11)], fontsize=8, color=INK_LIGHT)
+        ax.set_yticklabels([f"{1 - i / 10:.1f}" for i in range(11)], fontsize=8, color=INK_LIGHT)
+        ax.tick_params(length=3, color=INK_LIGHT)
+        for spine in ax.spines.values():
+            spine.set_edgecolor(INK_LIGHT)
+            spine.set_linewidth(0.6)
+        ax.grid(True, linestyle="--", linewidth=0.5, color=INK_LIGHT, alpha=0.6)
+    else:
+        ax.set_axis_off()
 
     # Annotation defaults
     default_color = COLORS["text_dark"]

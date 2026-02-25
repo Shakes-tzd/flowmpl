@@ -52,10 +52,10 @@ def _():
     FS      = FONTS["annotation"]   # 14
     FS_SM   = FONTS["small"]        # 11
 
-    def preview(src_name: str, annotations: list[dict]) -> bytes:
+    def preview(src_name: str, annotations: list[dict], show_grid: bool = False) -> bytes:
         src = ASSETS / src_name
         transparent = remove_background(src)
-        return annotate_illustration(transparent, annotations, dpi=120)
+        return annotate_illustration(transparent, annotations, dpi=120, show_grid=show_grid)
 
     def save_annotated(src_name: str, annotations: list[dict]) -> Path:
         src = ASSETS / src_name
@@ -77,6 +77,13 @@ def _():
         preview,
         save_annotated,
     )
+
+
+@app.cell
+def _(mo):
+    show_grid = mo.ui.switch(label="Show coordinate grid (axes-fraction 0–1)")
+    show_grid
+    return (show_grid,)
 
 
 @app.cell(hide_code=True)
@@ -107,8 +114,8 @@ def _(C_LIGHT, C_MID, C_NEG, FS_SM):
 
 
 @app.cell
-def _(mo, obs_annotations, preview, save_annotated):
-    _png = preview("dd001_off_balance_sheet_illus.png", obs_annotations)
+def _(mo, obs_annotations, preview, save_annotated, show_grid):
+    _png = preview("dd001_off_balance_sheet_illus.png", obs_annotations, show_grid.value)
     _btn = mo.ui.button(label="Save annotated", on_click=lambda _: save_annotated(
         "dd001_off_balance_sheet_illus.png", obs_annotations))
     mo.vstack([mo.image(_png, width=700), _btn])
@@ -146,8 +153,8 @@ def _(C_LIGHT, C_MID, C_NEG, C_NEUT, C_POS, FS_SM):
 
 
 @app.cell
-def _(mo, preview, save_annotated, six_annotations):
-    _png = preview("dd001_six_demand_assumptions_illus.png", six_annotations)
+def _(mo, preview, save_annotated, show_grid, six_annotations):
+    _png = preview("dd001_six_demand_assumptions_illus.png", six_annotations, show_grid.value)
     _btn = mo.ui.button(label="Save annotated", on_click=lambda _: save_annotated(
         "dd001_six_demand_assumptions_illus.png", six_annotations))
     mo.vstack([mo.image(_png, width=700), _btn])
@@ -181,8 +188,8 @@ def _(C_LIGHT, C_NEG, C_POS, FS_SM):
 
 
 @app.cell
-def _(jev_annotations, mo, preview, save_annotated):
-    _png = preview("dd001_jevons_paradox_illus.png", jev_annotations)
+def _(jev_annotations, mo, preview, save_annotated, show_grid):
+    _png = preview("dd001_jevons_paradox_illus.png", jev_annotations, show_grid.value)
     _btn = mo.ui.button(label="Save annotated", on_click=lambda _: save_annotated(
         "dd001_jevons_paradox_illus.png", jev_annotations))
     mo.vstack([mo.image(_png, width=700), _btn])
@@ -217,8 +224,8 @@ def _(C_DARK, C_NEG, C_NEUT, C_POS, FS_SM):
 
 
 @app.cell
-def _(mo, preview, save_annotated, three_annotations):
-    _png = preview("dd001_three_paths_illus.png", three_annotations)
+def _(mo, preview, save_annotated, show_grid, three_annotations):
+    _png = preview("dd001_three_paths_illus.png", three_annotations, show_grid.value)
     _btn = mo.ui.button(label="Save annotated", on_click=lambda _: save_annotated(
         "dd001_three_paths_illus.png", three_annotations))
     mo.vstack([mo.image(_png, width=700), _btn])
