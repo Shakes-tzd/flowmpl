@@ -107,10 +107,11 @@ ICONS: list[tuple[str, str]] = [
         "background, no gray tones, no shading, no text labels, isolated icon.",
     ),
     (
-        "arrow_diagonal",
-        "Pure black ink line art of a single large thick arrow pointing diagonally "
-        "up and to the right. Bold filled arrow shape, pure white background, "
-        "no gray tones, no shading, no text, isolated icon suitable for vectorization.",
+        "arrow",
+        "Pure black ink line art of a single large thick arrow pointing straight to "
+        "the right, horizontal. Bold filled arrow shape with rectangular shaft and "
+        "triangular head, pure white background, no gray tones, no shading, no text, "
+        "isolated icon suitable for vectorization.",
     ),
     (
         "bolt",

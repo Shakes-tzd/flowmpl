@@ -965,12 +965,7 @@ def sketch_assets(CONCEPT_INK, FUEL_COLORS, load_icon):
     sketch_factory  = _load("factory")
     sketch_cloud    = _load("cloud")
     sketch_bank     = _load("bank")
-    sketch_arrow    = _load("arrow_diagonal")
-    sketch_bolt     = _load("bolt",        color=FUEL_COLORS["wind"])
-    sketch_solar    = _load("solar_panel", color=FUEL_COLORS["solar"])
-    sketch_wind     = _load("wind_turbine", color=FUEL_COLORS["wind"])
     return (
-        sketch_arrow,
         sketch_bank,
         sketch_cloud,
         sketch_coins,
@@ -989,12 +984,13 @@ def _(mo):
     ## Tariff Carve-Out Scene (chart_scene_frame + sketch assets)
 
     Reconstruction of a NotebookLM-style explainer frame using only flowmpl primitives.
-    The bar chart and callout text are programmatic; surrounding icons and the diagonal
-    arrow are hand-drawn sketch PNGs generated via Gemini (`notebooks/assets/icons/`).
+    The bar chart and callout text are programmatic; surrounding icons are hand-drawn
+    sketch PNGs generated via Gemini (`notebooks/assets/icons/`).  The diagonal arrow
+    is drawn natively via `ax.annotate` (no raster asset; use `arrow.svg` + rotated
+    corners if a sketch-style arrow is needed in future).
 
     > **Assets used:** `server.png`, `cpu.png`, `database.png`, `moneybag.png`,
-    > `coins.png`, `shield.png`, `factory.png`, `cloud.png`, `bank.png`,
-    > `arrow_diagonal.png`
+    > `coins.png`, `shield.png`, `factory.png`, `cloud.png`, `bank.png`
     """)
     return
 
@@ -1004,7 +1000,6 @@ def tariff_carveout_scene(
     CONCEPT_INK,
     FUEL_COLORS,
     chart_scene_frame,
-    sketch_arrow,
     sketch_bank,
     sketch_cloud,
     sketch_coins,
@@ -1019,8 +1014,8 @@ def tariff_carveout_scene(
 
     # ── Bar chart: Pre / Post Carve-out ───────────────────────────────────────
     _fig_bar, _ax = plt.subplots(figsize=(5, 4.5))
-    _fig_bar.patch.set_facecolor("white")
-    _ax.set_facecolor("white")
+    _fig_bar.patch.set_facecolor("none")
+    _ax.set_facecolor("none")
     _ax.bar(
         ["Pre-\nCarve-\nout", "Post-\nCarve-\nout"],
         [150, 450],
@@ -1042,33 +1037,61 @@ def tariff_carveout_scene(
         chart_fig=_fig_bar,
         # No callout card — right-panel text is added manually for italic support
         surrounding_icons=[
-            # Arrow first so all icons render on top of it.
-            # alpha=0.45: solid SVG fill is heavy — partial transparency lets bars show.
-            {"bbox": (0.18, 0.18, 0.55, 0.80), "path": sketch_arrow, "alpha": 0.45},
+            # Corners format: [(x0,y0),(x1,y0),(x1,y1),(x0,y1)] CCW from bottom-left.
+            # Drawing order = z-order: first entry is lowest (behind all others).
+            #
             # Left hardware column — tall, narrow, stacked vertically
-            {"bbox": (0.00, 0.73, 0.12, 0.93), "path": sketch_server},
-            {"bbox": (0.00, 0.47, 0.12, 0.67), "path": sketch_cpu},
-            {"bbox": (0.00, 0.08, 0.12, 0.28), "path": sketch_database},
+            {"corners": [(0.00, 0.73), (0.12, 0.73), (0.12, 0.93), (0.00, 0.93)],
+             "path": sketch_server},
+            {"corners": [(0.00, 0.47), (0.12, 0.47), (0.12, 0.67), (0.00, 0.67)],
+             "path": sketch_cpu},
+            {"corners": [(0.00, 0.08), (0.12, 0.08), (0.12, 0.28), (0.00, 0.28)],
+             "path": sketch_database},
             # Second server at top-center (above chart bars, echoes reference)
-            {"bbox": (0.20, 0.79, 0.32, 0.97), "path": sketch_server},
+            {"corners": [(0.20, 0.79), (0.32, 0.79), (0.32, 0.97), (0.20, 0.97)],
+             "path": sketch_server},
             # Factory — wide footprint at bottom, below the bars
-            {"bbox": (0.28, 0.02, 0.54, 0.22), "path": sketch_factory},
+            {"corners": [(0.28, 0.02), (0.54, 0.02), (0.54, 0.22), (0.28, 0.22)],
+             "path": sketch_factory},
             # De-risking zone: coins above, shield below (right of bars)
-            {"bbox": (0.49, 0.40, 0.62, 0.58), "path": sketch_coins},
-            {"bbox": (0.50, 0.22, 0.61, 0.38), "path": sketch_shield},
+            {"corners": [(0.49, 0.40), (0.62, 0.40), (0.62, 0.58), (0.49, 0.58)],
+             "path": sketch_coins},
+            {"corners": [(0.50, 0.22), (0.61, 0.22), (0.61, 0.38), (0.50, 0.38)],
+             "path": sketch_shield},
             # Right panel: cloud (upper corner) + bank
-            {"bbox": (0.70, 0.84, 0.82, 0.97), "path": sketch_cloud},
-            {"bbox": (0.82, 0.76, 0.96, 0.95), "path": sketch_bank},
+            {"corners": [(0.70, 0.84), (0.82, 0.84), (0.82, 0.97), (0.70, 0.97)],
+             "path": sketch_cloud},
+            {"corners": [(0.82, 0.76), (0.96, 0.76), (0.96, 0.95), (0.82, 0.95)],
+             "path": sketch_bank},
             # Moneybags LAST — rendered on top, at the arrow tip (focal point)
-            {"bbox": (0.33, 0.62, 0.50, 0.93), "path": sketch_moneybag},
-            {"bbox": (0.45, 0.59, 0.60, 0.88), "path": sketch_moneybag},
+            {"corners": [(0.33, 0.8), (0.50, 0.8), (0.50, 0.93), (0.33, 0.93)],
+             "path": sketch_moneybag},
+            {"corners": [(0.45, 0.59), (0.60, 0.59), (0.60, 0.88), (0.45, 0.88)],
+             "path": sketch_moneybag},
         ],
         chart_zoom=0.46,
     )
 
+    # ── Background arrow (native matplotlib — no asset, no PIL) ──────────────
+    # Tail at bottom-left of chart area, tip at upper-right near moneybags.
+    # lw controls shaft thickness; mutation_scale controls arrowhead size.
+    _sa = tariff_fig.axes[0]
+    _sa.annotate(
+        "",
+        xy=(0.55, 0.80), xycoords="axes fraction",      # tip
+        xytext=(0.18, 0.18), textcoords="axes fraction", # tail
+        arrowprops=dict(
+            arrowstyle="-|>",
+            mutation_scale=40,
+            lw=14,
+            color=CONCEPT_INK,
+            alpha=0.18,
+        ),
+        zorder=2,
+    )
+
     # ── Right-panel callout text ──────────────────────────────────────────────
     # Split into separate calls so "tariff carve-outs" can be italic
-    _sa = tariff_fig.axes[0]
     for _line, _y, _kw in [
         ("U.S. imports of computer", 0.63, {}),
         ("parts surged after",       0.53, {}),

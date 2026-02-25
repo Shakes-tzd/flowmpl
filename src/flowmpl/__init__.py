@@ -7,6 +7,7 @@ Optional dependencies:
   pip install flowmpl[charts]  # pandas — for chart functions
   pip install flowmpl[maps]    # geopandas + requests — for us_scatter_map
   pip install flowmpl[icons]   # pyconify + cairosvg — for fetch_icon
+  pip install flowmpl[gemini]  # google-genai — for generate_illustration
   pip install flowmpl[all]     # all optional deps
 """
 
@@ -19,6 +20,7 @@ from flowmpl.charts import (
 )
 from flowmpl.concept import (
     CHART_SCENE_LAYOUT,
+    bbox_to_corners,
     cascade_frame,
     chart_scene_frame,
     comparison_frame,
@@ -60,6 +62,12 @@ from flowmpl.helpers import (
     reference_line,
 )
 from flowmpl.icons import fetch_icon, load_icon
+from flowmpl.illustrations import (
+    annotate_illustration,
+    generate_illustration,
+    generate_illustrations,
+    remove_background,
+)
 from flowmpl.maps import us_scatter_map
 from flowmpl.palettes import (
     CATEGORICAL,
@@ -116,9 +124,15 @@ __all__ = [
     "waterfall_chart",
     # Maps
     "us_scatter_map",
+    # Illustrations
+    "generate_illustration",
+    "generate_illustrations",
+    "remove_background",
+    "annotate_illustration",
     # Flow
     "flow_diagram",
     # Concept frames
+    "bbox_to_corners",
     "cascade_frame",
     "chart_scene_frame",
     "comparison_frame",
