@@ -1,7 +1,10 @@
 import marimo
 
 __generated_with = "0.19.11"
-app = marimo.App(width="full", app_title="DD-001 Illustration Annotation Editor")
+app = marimo.App(
+    width="full",
+    app_title="DD-001 Illustration Annotation Editor",
+)
 
 
 @app.cell(hide_code=True)
@@ -14,8 +17,16 @@ def _(mo):
     1. **Annotation spec** — edit `xy`, `text`, `color`, `ha`, `style` directly in code
     2. **Live preview** — re-renders automatically on every change
 
-    Coordinate system: `xy = (x, y)` in **axes-fraction** (0.0 = left/bottom, 1.0 = right/top).
-    `target` adds an arrow tip (also axes-fraction); omit it for a plain floating label.
+    **Coordinates** — `xy` and `target` are **axes-fraction**: `(0, 0)` = bottom-left, `(1, 1)` = top-right.
+
+    To add an arrow: set both `xy` (label anchor = arrow base) and `target` (arrow tip) in the **same dict**.
+    Moving `xy` moves the label and the arrow together. No separate dicts needed.
+
+    | key | meaning |
+    |---|---|
+    | `xy` | label position — also the arrow's base |
+    | `target` | arrow tip (omit for a floating label with no arrow) |
+    | `style` | `"box"` = rounded outline, `"plain"` = bare text |
 
     Hit **Save annotated** on any panel to write the final PNG to `notebooks/assets/`.
     """)
@@ -55,32 +66,39 @@ def _():
         return dest
 
     return (
-        ASSETS, C_DARK, C_LIGHT, C_MID, C_NEG, C_NEUT, C_POS,
-        FONTS, FS, FS_SM, PAPER,
-        mo, preview, save_annotated,
+        C_DARK,
+        C_LIGHT,
+        C_MID,
+        C_NEG,
+        C_NEUT,
+        C_POS,
+        FS_SM,
+        mo,
+        preview,
+        save_annotated,
     )
 
 
-# ── Off-balance-sheet ────────────────────────────────────────────────────────
-
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md("## 1 · Off-balance-sheet commitments")
+    mo.md("""
+    ## 1 · Off-balance-sheet commitments
+    """)
     return
 
 
 @app.cell
 def _(C_LIGHT, C_MID, C_NEG, FS_SM):
     obs_annotations = [
-        # Books area — top half
-        dict(text="Declared in\nfinancial filings", xy=(0.78, 0.18),
-             color=C_MID,  fontsize=FS_SM, ha="left", va="center", style="box"),
-        dict(text="", xy=(0.77, 0.22), target=(0.60, 0.28), color=C_MID, fontsize=FS_SM),
-        # Server racks — below waterline
-        dict(text="Off-balance-sheet\ncommitments", xy=(0.68, 0.72),
-             color=C_NEG,  fontsize=FS_SM, ha="left", va="center", style="box"),
-        dict(text="", xy=(0.67, 0.70), target=(0.50, 0.65), color=C_NEG, fontsize=FS_SM),
-        # Stat note
+        # Books area — top half. xy = label position (= arrow base), target = arrow tip on the books.
+        dict(text="Declared in\nfinancial filings", xy=(0.78, 0.72),
+             target=(0.65, 0.62),
+             color=C_MID, fontsize=FS_SM, ha="left", va="center", style="box"),
+        # Server racks — below waterline. target points into the server rack area.
+        dict(text="Off-balance-sheet\ncommitments", xy=(0.78, 0.18),
+             target=(0.65, 0.45),
+             color=C_NEG, fontsize=FS_SM, ha="left", va="center", style="box"),
+        # Stat note — no arrow
         dict(text="Microsoft: +~30% capex added in 3 months (Sep–Nov 2025)\n"
                   "Meta: 80% third-party financed",
              xy=(0.02, 0.94), color=C_LIGHT, fontsize=FS_SM - 1, ha="left", va="bottom"),
@@ -97,11 +115,11 @@ def _(mo, obs_annotations, preview, save_annotated):
     return
 
 
-# ── Six demand assumptions ───────────────────────────────────────────────────
-
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md("## 2 · Six demand assumptions")
+    mo.md("""
+    ## 2 · Six demand assumptions
+    """)
     return
 
 
@@ -136,11 +154,11 @@ def _(mo, preview, save_annotated, six_annotations):
     return
 
 
-# ── Jevons paradox ───────────────────────────────────────────────────────────
-
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md("## 3 · Jevons paradox")
+    mo.md("""
+    ## 3 · Jevons paradox
+    """)
     return
 
 
@@ -171,11 +189,11 @@ def _(jev_annotations, mo, preview, save_annotated):
     return
 
 
-# ── Three paths ──────────────────────────────────────────────────────────────
-
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md("## 4 · Three paths forward")
+    mo.md("""
+    ## 4 · Three paths forward
+    """)
     return
 
 
@@ -207,11 +225,12 @@ def _(mo, preview, save_annotated, three_annotations):
     return
 
 
-# ── Save all ─────────────────────────────────────────────────────────────────
-
 @app.cell(hide_code=True)
 def _(mo):
-    mo.md("---\n## Save all four")
+    mo.md("""
+    ---
+    ## Save all four
+    """)
     return
 
 
@@ -226,14 +245,28 @@ def _(
 ):
     def _save_all(_):
         jobs = [
-            ("dd001_off_balance_sheet_illus.png",     obs_annotations),
-            ("dd001_six_demand_assumptions_illus.png", six_annotations),
-            ("dd001_jevons_paradox_illus.png",         jev_annotations),
-            ("dd001_three_paths_illus.png",            three_annotations),
+            ("dd001_off_balance_sheet_illus.png",      obs_annotations),
+            ("dd001_six_demand_assumptions_illus.png",  six_annotations),
+            ("dd001_jevons_paradox_illus.png",          jev_annotations),
+            ("dd001_three_paths_illus.png",             three_annotations),
         ]
         saved = [save_annotated(fname, anns) for fname, anns in jobs]
         return [str(p) for p in saved]
 
     save_all_btn = mo.ui.button(label="Save all annotated PNGs", on_click=_save_all)
-    mo.vstack([save_all_btn, mo.md(str(save_all_btn.value) if save_all_btn.value else "")])
+    save_all_btn
     return (save_all_btn,)
+
+
+@app.cell
+def _(mo, save_all_btn):
+    mo.md(
+        "\n".join(f"✓ `{p}`" for p in save_all_btn.value)
+        if save_all_btn.value
+        else ""
+    )
+    return
+
+
+if __name__ == "__main__":
+    app.run()
