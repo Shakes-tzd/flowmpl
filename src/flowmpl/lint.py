@@ -211,7 +211,20 @@ def _collect_data_colors(ax: matplotlib.axes.Axes) -> set[str]:
             return None
         return mcolors.to_hex(rgba[:3])
 
+    # Collect non-data artists to skip: the axes background patch and
+    # any legend patches / legend-container artists.
+    skip_artists = {ax.patch}  # axes background
+    legend = ax.get_legend()
+    if legend is not None:
+        skip_artists.update(legend.get_children())
+        skip_artists.update(legend.get_patches())
+        skip_artists.update(legend.get_lines())
+        skip_artists.add(legend.get_frame())
+
     for artist in ax.get_children():
+        if artist in skip_artists:
+            continue
+
         # Lines (plot, axhline)
         from matplotlib.lines import Line2D
 

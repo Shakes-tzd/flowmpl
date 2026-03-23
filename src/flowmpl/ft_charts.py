@@ -235,7 +235,11 @@ def scatter(
     # Sizes
     if size_col is not None:
         raw_sizes = df[size_col].values.astype(float)
-        sizes = (raw_sizes / raw_sizes.max()) * size_scale
+        max_val = raw_sizes.max()
+        if max_val > 0:
+            sizes = (raw_sizes / max_val) * size_scale
+        else:
+            sizes = np.full(len(raw_sizes), 60.0)  # constant fallback
     else:
         sizes = np.full(len(x), 60.0)
 

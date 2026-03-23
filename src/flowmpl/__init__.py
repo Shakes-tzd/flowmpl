@@ -80,6 +80,8 @@ from flowmpl.helpers import (
     reference_line,
 )
 from flowmpl.icons import fetch_icon, load_icon
+from flowmpl.lint import LintResult, Severity, lint, lint_summary
+from flowmpl.strategy import RELATIONSHIPS, color_strategy, suggest_chart
 from flowmpl.illustrations import (
     annotate_illustration,
     generate_illustration,
@@ -182,4 +184,13 @@ __all__ = [
     "TARGETS",
     "list_targets",
     "figure_info",
+    # Lint
+    "lint",
+    "lint_summary",
+    "LintResult",
+    "Severity",
+    # Strategy
+    "color_strategy",
+    "suggest_chart",
+    "RELATIONSHIPS",
 ]

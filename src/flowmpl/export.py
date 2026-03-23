@@ -243,6 +243,13 @@ def export(
     out = Path(path)
     if not out.suffix:
         out = out.with_suffix(f".{resolved_fmt}")
+    else:
+        # When the path suffix doesn't match the resolved format, override it.
+        # E.g. path="figure.png" + target="prs" → resolved_fmt="tiff";
+        # writing CMYK data as PNG would crash, so force the correct suffix.
+        path_ext = out.suffix.lstrip(".").lower()
+        if path_ext != resolved_fmt:
+            out = out.with_suffix(f".{resolved_fmt}")
     out = out.resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
 
