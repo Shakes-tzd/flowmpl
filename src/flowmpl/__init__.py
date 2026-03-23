@@ -51,8 +51,26 @@ from flowmpl.design import (
     SCATTER_DEFAULTS,
     apply_style,
 )
+from flowmpl.export import (
+    TARGETS,
+    ExportTarget,
+    export,
+    figure_info,
+    list_targets,
+)
 from flowmpl.flow import flow_diagram
+from flowmpl.ft_charts import (
+    diverging_bar,
+    histogram,
+    lollipop,
+    paired_bar,
+    scatter,
+    slope_chart,
+    strip_plot,
+    surplus_deficit_line,
+)
 from flowmpl.helpers import (
+    add_brand_mark,
     add_rule,
     add_source,
     annotate_point,
@@ -107,6 +125,7 @@ __all__ = [
     "company_label",
     "fuel_color",
     # Helpers
+    "add_brand_mark",
     "add_rule",
     "add_source",
     "annotate_point",
@@ -122,6 +141,15 @@ __all__ = [
     "multi_panel",
     "stacked_bar",
     "waterfall_chart",
+    # FT Visual Vocabulary charts
+    "diverging_bar",
+    "histogram",
+    "lollipop",
+    "paired_bar",
+    "scatter",
+    "slope_chart",
+    "strip_plot",
+    "surplus_deficit_line",
     # Maps
     "us_scatter_map",
     # Illustrations
@@ -148,4 +176,10 @@ __all__ = [
     "CONCEPT_YELLOW",
     # Concept layout
     "CHART_SCENE_LAYOUT",
+    # Export
+    "export",
+    "ExportTarget",
+    "TARGETS",
+    "list_targets",
+    "figure_info",
 ]

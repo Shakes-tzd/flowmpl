@@ -29,6 +29,7 @@ def annotated_series(
     annotations: list[tuple[str, object, float, tuple]] | None = None,
     ylabel: str = "Index",
     fill_between: tuple[str, str] | None = None,
+    grid: bool = False,
     figsize: tuple[float, float] = (10, 5),
 ) -> plt.Figure:
     """Plot time series with optional annotations and fill.
@@ -48,6 +49,9 @@ def annotated_series(
         Y-axis label.
     fill_between : (col_upper, col_lower), optional
         Shade area between two columns.
+    grid : bool
+        If True, draw a light dotted grid. Default False (SWD best practice:
+        grids add chartjunk unless the reader needs to look up exact values).
     figsize : tuple
         Figure size.
 
@@ -81,7 +85,8 @@ def annotated_series(
             )
 
     ax.set_ylabel(ylabel, fontsize=FONTS["axis_label"])
-    ax.grid(True, linestyle=":", alpha=0.6)
+    if grid:
+        ax.grid(True, linestyle=":", alpha=0.6)
     plt.tight_layout()
     legend_below(ax)
     chart_title(fig, title)
